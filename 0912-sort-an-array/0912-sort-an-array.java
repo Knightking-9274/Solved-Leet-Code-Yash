@@ -2,53 +2,65 @@ class Solution {
     //we can use merge sort algortihm or heap sort algorithm to achieve O(nlog(n)) time complexity
     public int[] sortArray(int[] nums) {
         int start = 0, end = nums.length-1;
-        heapSort(nums);
+        mergeSort(nums,start,end);
         return nums;
     }
-   public static void heapSort(int[] nums) {
-        int n = nums.length;
+    public static void mergeSort(int[] nums, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
 
-        // Build a max heap
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            heapify(nums, n, i);
-        }
+            // Sort the first half
+            mergeSort(nums, left, mid);
+            // Sort the second half
+            mergeSort(nums, mid + 1, right);
 
-        // Extract elements from the heap one by one
-        for (int i = n - 1; i >= 0; i--) {
-            // Move the current root to the end
-            int temp = nums[0];
-            nums[0] = nums[i];
-            nums[i] = temp;
-
-            // Call max heapify on the reduced heap
-            heapify(nums, i, 0);
+            // Merge the sorted halves
+            merge(nums, left, mid, right);
         }
     }
+    public static void merge(int[] nums, int left, int mid, int right) {
+        // Find sizes of two subarrays to be merged
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
 
-    // To heapify a subtree rooted at node i which is an index in nums[]
-    public static void heapify(int[] nums, int n, int i) {
-        int largest = i; // Initialize largest as root
-        int left = 2 * i + 1; // left child
-        int right = 2 * i + 2; // right child
+        // Create temporary arrays
+        int[] leftArray = new int[n1];
+        int[] rightArray = new int[n2];
 
-        // If the left child is larger than the root
-        if (left < n && nums[left] > nums[largest]) {
-            largest = left;
+        // Copy data to temporary arrays
+        System.arraycopy(nums, left, leftArray, 0, n1);
+        System.arraycopy(nums, mid + 1, rightArray, 0, n2);
+
+        // Merge the temporary arrays
+
+        // Initial indexes of the first and second subarrays
+        int i = 0, j = 0;
+
+        // Initial index of the merged subarray array
+        int k = left;
+        while (i < n1 && j < n2) {
+            if (leftArray[i] <= rightArray[j]) {
+                nums[k] = leftArray[i];
+                i++;
+            } else {
+                nums[k] = rightArray[j];
+                j++;
+            }
+            k++;
         }
 
-        // If the right child is larger than the largest so far
-        if (right < n && nums[right] > nums[largest]) {
-            largest = right;
+        // Copy remaining elements of leftArray[] if any
+        while (i < n1) {
+            nums[k] = leftArray[i];
+            i++;
+            k++;
         }
 
-        // If the largest is not the root
-        if (largest != i) {
-            int swap = nums[i];
-            nums[i] = nums[largest];
-            nums[largest] = swap;
-
-            // Recursively heapify the affected sub-tree
-            heapify(nums, n, largest);
+        // Copy remaining elements of rightArray[] if any
+        while (j < n2) {
+            nums[k] = rightArray[j];
+            j++;
+            k++;
         }
     }
     
